@@ -21,4 +21,5 @@ if MpointData == 1:
 
 elif MpointHTML == 1:
     BLT = HE.MPointHtmlExtractor(htmlfile)
-    BLT.Test()
+    for i in BLT.GetTable():
+        BLT.GetData(i)
