@@ -63,40 +63,42 @@ class MPointHtmlExtractor():
                         '7034': self.id_7034, # time stamp for end test run
                         }
         
-        self.rowlist = ['MAC ID',
-                   'PartNumber',
-                   'Begin-Date',
-                   'Begin-Time',
-                    'End-Date',
-                    'End-Time',
-                    'Test time(s)',
-                    'Test SW',
-                    'SilverBox',
-                    'Fixture',
-                    'Test site',
-                    'Firmware1',
-                    'Firmware2',
-                    'Vin',
-                    'Vout 1',
-                    'Vout 2',
-                    'Vout 3',
-                    'Vout 4',
-                    'TxPwr 900 Mesh 0',
-                    'Freq 900 Mesh 0',
-                    'Freq Error 900 Mesh 0',
-                    'TxPwr 900 Mesh 41',
-                    'Freq 900 Mesh 41',
-                    'Freq Error 900 Mesh 41',
-                    'TxPwr 900 Mesh 82',
-                    'Freq 900 Mesh 82',
-                    'Freq Error 900 Mesh 82',
-                    'TxPwr 900 Mesh Ext 0',
-                    'TxPwr 900 Mesh Ext 82',
-                    'Rx rate 900 Mesh 0',
-                    'Rx pwr 900 Mesh 0',
-                    'Rx rate 900 Mesh 82',
-                    'Rx pwr 900 Mesh 82',
-                    ]
+        self.rowlist = ['Line',                        
+                        'MAC ID',
+                        'msg',
+                       'PartNumber',
+                       'Begin-Date',
+                       'Begin-Time',
+                        'End-Date',
+                        'End-Time',
+                        'Test time(s)',
+                        'Test SW',
+                        'SilverBox',
+                        'Fixture',
+                        'Test site',
+                        'Firmware1',
+                        'Firmware2',
+                        'Vin',
+                        'Vout 1',
+                        'Vout 2',
+                        'Vout 3',
+                        'Vout 4',
+                        'TxPwr 900 Mesh 0',
+                        'Freq 900 Mesh 0',
+                        'Freq Error 900 Mesh 0',
+                        'TxPwr 900 Mesh 41',
+                        'Freq 900 Mesh 41',
+                        'Freq Error 900 Mesh 41',
+                        'TxPwr 900 Mesh 82',
+                        'Freq 900 Mesh 82',
+                        'Freq Error 900 Mesh 82',
+                        'TxPwr 900 Mesh Ext 0',
+                        'TxPwr 900 Mesh Ext 82',
+                        'Rx rate 900 Mesh 0',
+                        'Rx pwr 900 Mesh 0',
+                        'Rx rate 900 Mesh 82',
+                        'Rx pwr 900 Mesh 82',
+                        ]
         
         self.CrateCSV()
 
@@ -239,14 +241,36 @@ class MPointHtmlExtractor():
     
     
     def GetTable(self):
-        tb = self.soup.find_all('table', {'class':'arial_sm_black'})
-        for i in range(len(tb)):
+        td = self.soup.find_all('td', {'class':'arial_med'}) # Test Instance : etc etc blah blah
+        tb = self.soup.find_all('table', {'class':'arial_sm_black'}) # 
+        self.lineNo = 0
+        td = td[1:]
+        for i in range(len(tb)):  
         #for i in range(10):
-            yield tb[i].find_all('tr')
+            self.lineNo = i+1            
+            yield td[i].contents, tb[i].find_all('tr')
     
-    def GetData(self, trow):
+    def GetMsg(self, td):
+        for i in td:
+            #print '-'*100            
+            #print i.string
+            #print '-'*100
+            msg = re.search('(?<=msg: \[)\d{4}', i.string)
+            
+            if msg is not None:
+                #print type(str(msg.group()))
+                #remove the 4 from msg i.e. 4137 becomes 137
+                self.row['msg'] = str(msg.group()[1:])
+    
+    def GetData(self, td, trow):
         debug = 0
         self.InitRow(self.rowlist)
+        self.row['Line'] = self.lineNo
+        
+        #td process
+        self.GetMsg(td)
+        
+        #trow process
         for i in range(len(trow)):
             #print trow[i].find_all('td')[0]
             #try:
