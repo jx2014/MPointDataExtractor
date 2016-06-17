@@ -52,7 +52,7 @@ class MPointDataExtractor():
             return found.group(0)
     
     def GetBDay(self, line):
-        pattern = r"(?<=BIRTH DATE\:\s)201[0-5]-[0-1][0-9]-[0-3][0-9]" # i.e. BIRTH DATE: 2011-07-14
+        pattern = r"(?<=BIRTH DATE\:\s)20[0-3][0-5]-[0-1][0-9]-[0-3][0-9]" # i.e. BIRTH DATE: 2011-07-14
         found = re.search(pattern, line)
         if found:
             return found.group(0)
